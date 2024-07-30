@@ -41,7 +41,7 @@ namespace QobuzDownloaderX.Shared
         {
             var fontFamily = GetFontFamily(fontFamilyName);
 
-            return fontFamily != null 
+            return fontFamily != null
                 ? new Font(fontFamily, size, style)
                 : null;
         }

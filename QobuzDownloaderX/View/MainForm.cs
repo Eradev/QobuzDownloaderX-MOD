@@ -49,8 +49,8 @@ namespace QobuzDownloaderX.View
         private void MainForm_Load(object sender, EventArgs e)
         {
             // Set main form size on launch and bring to center.
-            this.Height = 533;
-            this.CenterToScreen();
+            Height = 533;
+            CenterToScreen();
 
             // Grab profile image
             var profilePic = Convert.ToString(Globals.Login.User.Avatar);
@@ -406,16 +406,16 @@ namespace QobuzDownloaderX.View
 
         private void tagsLabel_Click(object sender, EventArgs e)
         {
-            if (this.Height == 533)
+            if (Height == 533)
             {
                 //New Height
-                this.Height = 660;
+                Height = 660;
                 tagsLabel.Text = "🠉 Choose which tags to save (click me) 🠉";
             }
-            else if (this.Height == 660)
+            else if (Height == 660)
             {
                 //New Height
-                this.Height = 533;
+                Height = 533;
                 tagsLabel.Text = "🠋 Choose which tags to save (click me) 🠋";
             }
         }
@@ -806,7 +806,7 @@ namespace QobuzDownloaderX.View
 
         private void minimizeLabel_Click(object sender, EventArgs e)
         {
-            this.WindowState = FormWindowState.Minimized;
+            WindowState = FormWindowState.Minimized;
         }
 
         private void minimizeLabel_MouseHover(object sender, EventArgs e)

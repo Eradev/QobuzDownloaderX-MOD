@@ -8,9 +8,12 @@ namespace QobuzDownloaderX.Shared
 {
     public class DownloadLogger
     {
-        public readonly string downloadErrorLogPath = Path.Combine(Globals.LoggingDir, $"Download_Errors_{DateTime.Now:yyyy-mm-dd.HHmmss}.log");
         public delegate void DownloadEnded();
-        private readonly DownloadEnded updateUiOnDownloadEnd;
+
+        private readonly string _downloadErrorLogPath = Path.Combine(Globals.LoggingDir, $"Download_Errors_{DateTime.Now:yyyy-mm-dd.HHmmss}.log");
+
+        private readonly DownloadEnded _updateUiOnDownloadEnd;
+
         private TextBox ScreenOutputTextBox { get; }
 
         public string DownloadLogPath { get; set; }
@@ -18,15 +21,15 @@ namespace QobuzDownloaderX.Shared
         public DownloadLogger(TextBox outputTextBox, DownloadEnded updateUiOnDownloadEnd)
         {
             ScreenOutputTextBox = outputTextBox;
-            this.updateUiOnDownloadEnd = updateUiOnDownloadEnd;
+            _updateUiOnDownloadEnd = updateUiOnDownloadEnd;
         }
 
         public void RemovePreviousErrorLog()
         {
             // Remove previous download error log
-            if (File.Exists(downloadErrorLogPath))
+            if (File.Exists(_downloadErrorLogPath))
             {
-                File.Delete(downloadErrorLogPath);
+                File.Delete(_downloadErrorLogPath);
             }
         }
 
@@ -104,12 +107,12 @@ namespace QobuzDownloaderX.Shared
                 return;
             }
 
-            File.AppendAllLines(downloadErrorLogPath, logEntries);
+            File.AppendAllLines(_downloadErrorLogPath, logEntries);
         }
 
         public void AddDownloadErrorLogLine(string logEntry)
         {
-            AddDownloadErrorLogLines(new string[] { logEntry });
+            AddDownloadErrorLogLines(new[] { logEntry });
         }
 
         /// <summary>
@@ -127,7 +130,7 @@ namespace QobuzDownloaderX.Shared
             AddDownloadErrorLogLine($"{downloadTaskType} Download Task ERROR.");
             AddDownloadErrorLogLine(downloadEx.ToString());
             AddDownloadErrorLogLine(Environment.NewLine);
-            updateUiOnDownloadEnd?.Invoke();
+            _updateUiOnDownloadEnd?.Invoke();
         }
 
         public void LogFinishedDownloadJob(bool noErrorsOccurred)
@@ -142,7 +145,7 @@ namespace QobuzDownloaderX.Shared
                 true,
                 true);
 
-            updateUiOnDownloadEnd?.Invoke();
+            _updateUiOnDownloadEnd?.Invoke();
         }
 
         public void ClearUiLogComponent()

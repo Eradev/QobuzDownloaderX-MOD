@@ -19,20 +19,25 @@ namespace QobuzDownloaderX.View
 {
     public partial class LoginForm : HeadlessForm
     {
-        private readonly string dllCheck = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "TagLibSharp.dll");
-
-        private readonly string loginErrorLog = Path.Combine(Globals.LoggingDir, "Login_Errors.log");
-        private readonly string versionCheckErrorLog = Path.Combine(Globals.LoggingDir, "VersionCheck_Errors.log");
+        private readonly string _dllCheck = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "TagLibSharp.dll");
+        private readonly string _loginErrorLog = Path.Combine(Globals.LoggingDir, "Login_Errors.log");
+        private readonly string _versionCheckErrorLog = Path.Combine(Globals.LoggingDir, "VersionCheck_Errors.log");
 
         public LoginForm()
         {
             InitializeComponent();
 
             // Delete previous login error log
-            if (System.IO.File.Exists(loginErrorLog)) System.IO.File.Delete(loginErrorLog);
-            // Delete previous version check error log
-            if (System.IO.File.Exists(versionCheckErrorLog)) System.IO.File.Delete(versionCheckErrorLog);
+            if (File.Exists(_loginErrorLog))
+            {
+                File.Delete(_loginErrorLog);
+            }
 
+            // Delete previous version check error log
+            if (File.Exists(_versionCheckErrorLog))
+            {
+                File.Delete(_versionCheckErrorLog);
+            }
         }
 
         private string AltLoginValue { get; set; }
@@ -41,15 +46,19 @@ namespace QobuzDownloaderX.View
         {
             Application.Exit();
         }
+
         private async void LoginFrm_Load(object sender, EventArgs e)
         {
             // Get and display version number.
             verNumLabel2.Text = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
-            if (!System.IO.File.Exists(dllCheck))
+            if (!File.Exists(_dllCheck))
             {
-                MessageBox.Show("TagLibSharp.dll missing from folder!\r\nPlease Make sure the DLL is in the same folder as QobuzDownloaderX.exe!", "ERROR",
-                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    "TagLibSharp.dll missing from folder!\r\nPlease Make sure the DLL is in the same folder as QobuzDownloaderX.exe!",
+                    "ERROR",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
                 Application.Exit();
             }
 
@@ -210,18 +219,25 @@ namespace QobuzDownloaderX.View
             catch (Exception ex)
             {
                 // log the exeption details for info
-                System.IO.File.WriteAllText(versionCheckErrorLog, $"Failed to compare GitHub version, exception details below:\r\n{ex}");
+                File.WriteAllText(_versionCheckErrorLog, $"Failed to compare GitHub version, exception details below:\r\n{ex}");
 
-                var dialogResult = MessageBox.Show("Connection to GitHub to check for an update has failed.\r\nWould you like to check for an update manually?\r\n\r\nYour current version is " + Assembly.GetExecutingAssembly().GetName().Version.ToString(), "QBDLX | GitHub Connection Failed", MessageBoxButtons.YesNo);
-                if (dialogResult == DialogResult.Yes)
+                var dialogResult = MessageBox.Show(
+                    $"Connection to GitHub to check for an update has failed.\r\nWould you like to check for an update manually?\r\n\r\nYour current version is {Assembly.GetExecutingAssembly().GetName().Version}",
+                    "QBDLX | GitHub Connection Failed",
+                    MessageBoxButtons.YesNo);
+
+                switch (dialogResult)
                 {
-                    // If "Yes" is clicked, open GitHub page and close QBDLX.
-                    Process.Start(Globals.GITHUB_LATEST_URL);
-                    Application.Exit();
-                }
-                else if (dialogResult == DialogResult.No)
-                {
-                    // Ignore the update until next open.
+                    case DialogResult.Yes:
+                        // If "Yes" is clicked, open GitHub page and close QBDLX.
+                        Process.Start(Globals.GITHUB_LATEST_URL);
+                        Application.Exit();
+
+                        break;
+
+                    case DialogResult.No:
+                        // Ignore the update until next open.
+                        break;
                 }
             }
         }
@@ -246,7 +262,7 @@ namespace QobuzDownloaderX.View
                 emailTextbox.Visible = false;
                 passwordTextbox.Visible = false;
 
-                // Unhide alt login methods
+                // Show alt login methods
                 altLoginTutLabel.Visible = true;
                 userIdTextbox.Visible = true;
                 userAuthTokenTextbox.Visible = true;
@@ -264,7 +280,7 @@ namespace QobuzDownloaderX.View
                 userIdTextbox.Visible = false;
                 userAuthTokenTextbox.Visible = false;
 
-                // Unhide standard login methods
+                // Show standard login methods
                 emailTextbox.Visible = true;
                 passwordTextbox.Visible = true;
             }
@@ -289,7 +305,7 @@ namespace QobuzDownloaderX.View
             Globals.QbdlxForm = new QobuzDownloaderX();
             Globals.SearchForm = new SearchForm();
 
-            this.Invoke(new Action(() => this.Hide()));
+            Invoke(new Action(() => Hide()));
             Application.Run(Globals.QbdlxForm);
         }
 
@@ -318,7 +334,7 @@ namespace QobuzDownloaderX.View
                 }
 
                 loginText.Invoke(new Action(() => loginText.Text = errorMessage));
-                System.IO.File.AppendAllText(loginErrorLog, ex.ToString());
+                File.AppendAllText(_loginErrorLog, ex.ToString());
 
                 loginButton.Invoke(new Action(() => loginButton.Enabled = true));
                 altLoginLabel.Invoke(new Action(() => altLoginLabel.Visible = true));
@@ -363,7 +379,7 @@ namespace QobuzDownloaderX.View
                 }
 
                 // Write detailed info to log
-                System.IO.File.AppendAllLines(loginErrorLog, errorLines);
+                File.AppendAllLines(_loginErrorLog, errorLines);
                 loginButton.Invoke(new Action(() => loginButton.Enabled = true));
                 altLoginLabel.Invoke(new Action(() => altLoginLabel.Visible = true));
                 return;
@@ -372,9 +388,9 @@ namespace QobuzDownloaderX.View
             if (!QobuzApiServiceManager.GetApiService().IsAppSecretValid())
             {
                 loginText.Invoke(new Action(() => loginText.Text = "Invalid App Credentials Obtained, Results logged."));
-                System.IO.File.AppendAllText(loginErrorLog, "Test stream failed with obtained App data.\r\n");
-                System.IO.File.AppendAllText(loginErrorLog, $"Retrieved app_id: {QobuzApiServiceManager.GetApiService().AppId}\r\n");
-                System.IO.File.AppendAllText(loginErrorLog, $"Retrieved app_secret: {QobuzApiServiceManager.GetApiService().AppSecret}\r\n");
+                File.AppendAllText(_loginErrorLog, "Test stream failed with obtained App data.\r\n");
+                File.AppendAllText(_loginErrorLog, $"Retrieved app_id: {QobuzApiServiceManager.GetApiService().AppId}\r\n");
+                File.AppendAllText(_loginErrorLog, $"Retrieved app_secret: {QobuzApiServiceManager.GetApiService().AppSecret}\r\n");
                 loginButton.Invoke(new Action(() => loginButton.Enabled = true));
                 altLoginLabel.Invoke(new Action(() => altLoginLabel.Visible = true));
                 return;
