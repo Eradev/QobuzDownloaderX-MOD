@@ -8,7 +8,7 @@ namespace QobuzDownloaderX.Shared
 {
     public class DownloadLogger
     {
-        public readonly string downloadErrorLogPath = Path.Combine(Globals.LoggingDir, "Download_Errors.log");
+        public readonly string downloadErrorLogPath = Path.Combine(Globals.LoggingDir, $"Download_Errors_{DateTime.Now:yyyy-mm-dd.HHmmss}.log");
         public delegate void DownloadEnded();
         private readonly DownloadEnded updateUiOnDownloadEnd;
         private TextBox ScreenOutputTextBox { get; }
@@ -56,8 +56,11 @@ namespace QobuzDownloaderX.Shared
                 return;
             }
 
-            var logEntries = logEntry.Split(new[] { Environment.NewLine }, StringSplitOptions.None)
-                .Select(logLine => string.IsNullOrWhiteSpace(logLine) ? logLine : $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} : {logLine}");
+            var logEntries = logEntry
+                .Split(new[] { Environment.NewLine }, StringSplitOptions.None)
+                .Select(logLine => string.IsNullOrWhiteSpace(logLine)
+                    ? logLine
+                    : $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} : {logLine}");
 
             // Filter out all empty lines exept if the logEntry started with an empty line to avoid blank lines for each newline in UI
             var filteredLogEntries = logEntries.Aggregate(new List<string>(), (accumulator, current) =>
@@ -135,7 +138,9 @@ namespace QobuzDownloaderX.Shared
             AddDownloadLogLine(
                 noErrorsOccurred
                     ? "Download job completed! All downloaded files will be located in your chosen path."
-                    : "Download job completed with warnings and/or errors! Some or all files could be missing!", true, true);
+                    : "Download job completed with warnings and/or errors! Some or all files could be missing!",
+                true,
+                true);
 
             updateUiOnDownloadEnd?.Invoke();
         }

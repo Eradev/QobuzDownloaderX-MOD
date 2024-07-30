@@ -42,7 +42,7 @@ namespace QobuzDownloaderX.Shared
         {
             IsBusy = false;
             CheckIfStreamable = true;
-            this._logger = logger;
+            _logger = logger;
             _updateUiDownloadSpeed = updateUiDownloadSpeed;
             _updateAlbumUiTags = updateAlbumTagsUi;
         }
@@ -126,31 +126,30 @@ namespace QobuzDownloaderX.Shared
         {
             using (var streamToReadFrom = await httpClient.GetStreamAsync(downloadUrl))
             {
-                using (var streamToWriteTo = File.Create(filePath))
+                using var streamToWriteTo = File.Create(filePath);
+
+                long totalBytesRead = 0;
+                var stopwatch = Stopwatch.StartNew();
+                var buffer = new byte[32768]; // Use a 32KB buffer size for copying data
+                var firstBufferRead = false;
+
+                int bytesRead;
+                while ((bytesRead = await streamToReadFrom.ReadAsync(buffer, 0, buffer.Length)) > 0)
                 {
-                    long totalBytesRead = 0;
-                    var stopwatch = Stopwatch.StartNew();
-                    var buffer = new byte[32768]; // Use a 32KB buffer size for copying data
-                    var firstBufferRead = false;
+                    // Write only the minimum of buffer.Length and bytesRead bytes to the file
+                    await streamToWriteTo.WriteAsync(buffer, 0, Math.Min(buffer.Length, bytesRead));
 
-                    int bytesRead;
-                    while ((bytesRead = await streamToReadFrom.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                    // Calculate download speed
+                    totalBytesRead += bytesRead;
+                    var speed = totalBytesRead / 1024d / 1024d / stopwatch.Elapsed.TotalSeconds;
+
+                    // Update the downloadSpeedLabel with the current speed at download start and then max. every 100 ms, with 3 decimal places
+                    if (!firstBufferRead || stopwatch.ElapsedMilliseconds >= 200)
                     {
-                        // Write only the minimum of buffer.Length and bytesRead bytes to the file
-                        await streamToWriteTo.WriteAsync(buffer, 0, Math.Min(buffer.Length, bytesRead));
-
-                        // Calculate download speed
-                        totalBytesRead += bytesRead;
-                        var speed = totalBytesRead / 1024d / 1024d / stopwatch.Elapsed.TotalSeconds;
-
-                        // Update the downloadSpeedLabel with the current speed at download start and then max. every 100 ms, with 3 decimal places
-                        if (!firstBufferRead || stopwatch.ElapsedMilliseconds >= 200)
-                        {
-                            _updateUiDownloadSpeed.Invoke($"Downloading... {speed:F3} MB/s");
-                        }
-
-                        firstBufferRead = true;
+                        _updateUiDownloadSpeed.Invoke($"Downloading... {speed:F3} MB/s");
                     }
+
+                    firstBufferRead = true;
                 }
             }
 
@@ -285,11 +284,14 @@ namespace QobuzDownloaderX.Shared
             catch (AggregateException ae)
             {
                 // When a Task fails, an AggregateException is thrown. Could be a HttpClient timeout or network error.
-                _logger.AddDownloadLogErrorLine($"Track Download canceled, probably due to network error or request timeout. Details saved to error log.{Environment.NewLine}", true, true);
+                _logger.AddDownloadLogErrorLine($"Track Download cancelled, probably due to network error or request timeout. Details saved to error log.{Environment.NewLine}", true, true);
 
-                _logger.AddDownloadErrorLogLine("Track Download canceled, probably due to network error or request timeout.");
+                _logger.AddDownloadErrorLogLine("Track Download cancelled, probably due to network error or request timeout.");
                 _logger.AddDownloadErrorLogLine(ae.ToString());
                 _logger.AddDownloadErrorLogLine(Environment.NewLine);
+
+                File.Delete(DownloadPaths.FullTrackFilePath);
+                File.Create($"{DownloadPaths.FullTrackFilePath}.bad");
 
                 return false;
             }
@@ -301,6 +303,9 @@ namespace QobuzDownloaderX.Shared
                 _logger.AddDownloadErrorLogLine("Unknown error during Track Download.");
                 _logger.AddDownloadErrorLogLine(downloadEx.ToString());
                 _logger.AddDownloadErrorLogLine(Environment.NewLine);
+
+                File.Delete(DownloadPaths.FullTrackFilePath);
+                File.Create($"{DownloadPaths.FullTrackFilePath}.bad");
 
                 return false;
             }
