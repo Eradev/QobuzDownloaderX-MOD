@@ -15,7 +15,7 @@
 
 QobuzDownloaderX-MOD is a program for downloading music streams from the streaming platform [Qobuz](https://qobuz.com).
 
-You can not download anything with a free account.
+You can only download 30 second previews with a free account, a Studio (Family) account is needed to download full content.
 
 This Modded version of the [original QobuzDownloaderX](https://github.com/ImAiiR/QobuzDownloaderX) by [AiiR](https://github.com/ImAiiR) was created for educational purposes.  
 Some changes include:  
