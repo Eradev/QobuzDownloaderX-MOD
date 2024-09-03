@@ -176,12 +176,6 @@ namespace QobuzDownloaderX.Shared
                 _updateAlbumUiTags.Invoke(DownloadInfo);
             }
 
-            // Check if available for streaming.
-            if (!IsStreamable(qobuzTrack))
-            {
-                return false;
-            }
-
             // Create directories if they don't exist yet
             // Add Album ID to Album Path if requested (to avoid conflicts for similar albums with trimmed long names)
             CreateTrackDirectories(basePath, albumPathSuffix, isPartOfTracklist);
@@ -204,6 +198,14 @@ namespace QobuzDownloaderX.Shared
             DownloadPaths.FullTrackFileName = DownloadPaths.FinalTrackNamePath + Globals.AudioFileType;
             DownloadPaths.FullTrackFilePath = Path.Combine(trackPath, DownloadPaths.FullTrackFileName);
 
+            // Check if available for streaming.
+            if (!IsStreamable(qobuzTrack))
+            {
+                File.Create($"{DownloadPaths.FullTrackFilePath}.missing");
+
+                return false;
+            }
+
             // Check if the file already exists
             if (File.Exists(DownloadPaths.FullTrackFilePath))
             {
@@ -223,6 +225,8 @@ namespace QobuzDownloaderX.Shared
             {
                 // Can happen with free accounts trying to download non-previewable tracks (or if API call failed).
                 _logger.AddDownloadLogLine($"Couldn't get streaming URL for Track \"{DownloadPaths.FinalTrackNamePath}\". Skipping.\r\n", true, true);
+
+                File.Create($"{DownloadPaths.FullTrackFilePath}.missing");
 
                 return false;
             }

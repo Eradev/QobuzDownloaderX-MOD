@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -119,7 +120,18 @@ namespace QobuzDownloaderX.View
 
         private void Fill_AlbumResultsTablePanel(SearchResult searchResult)
         {
-            FillResultsTablePanel(searchResult?.Albums?.Items, album => new SearchResultRow
+            var searchQuery = searchInput.Text.Clone().ToString().Trim();
+
+            var albums = searchResult?.Albums?.Items
+                .Where(x =>
+                    x.Artist.Name.Contains(searchQuery) ||
+                    x.Title.Contains(searchQuery) ||
+                    x.Label.Name.Contains(searchQuery))
+                .OrderBy(x => x.Artist.Name)
+                .ThenByDescending(x => x.ReleaseDateOriginal)
+                .ThenByDescending(x => x.HiresStreamable);
+
+            FillResultsTablePanel(albums, album => new SearchResultRow
             {
                 ThumbnailUrl = album.Image.Thumbnail,
                 Artist = album.Artist.Name,
@@ -545,7 +557,9 @@ namespace QobuzDownloaderX.View
                 {
                     case "Album":
                         {
-                            var albumsResult = QobuzApiServiceManager.GetApiService().SearchAlbums(searchQuery, 100, 0, true);
+                            var albumsResult = QobuzApiServiceManager
+                                .GetApiService()
+                                .SearchAlbums(searchQuery, 100, 0, true);
                             Fill_AlbumResultsTablePanel(albumsResult);
 
                             break;
@@ -553,7 +567,9 @@ namespace QobuzDownloaderX.View
 
                     case "Track":
                         {
-                            var tracksResult = QobuzApiServiceManager.GetApiService().SearchTracks(searchQuery, 100, 0, true);
+                            var tracksResult = QobuzApiServiceManager
+                                .GetApiService()
+                                .SearchTracks(searchQuery, 100, 0, true);
                             Fill_TrackResultsTablePanel(tracksResult);
 
                             break;
