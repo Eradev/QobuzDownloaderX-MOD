@@ -41,6 +41,7 @@ namespace QobuzDownloaderX
             // Initialise forms
             Globals.LoginForm = new LoginForm();
             Globals.AboutForm = new AboutForm();
+            Globals.SettingsForm = new SettingsForm();
 
             // Register EventHandler to release resources on exit
             Application.ApplicationExit += ApplicationExit;

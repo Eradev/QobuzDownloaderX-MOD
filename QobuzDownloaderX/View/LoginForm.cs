@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using QobuzApiSharp.Exceptions;
+using QobuzDownloaderX.Properties;
 using QobuzDownloaderX.Shared;
 using QobuzDownloaderX.Shared.Tools;
 using System;
@@ -77,11 +78,11 @@ namespace QobuzDownloaderX.View
             */
 
             // Set saved settings to correct places.
-            emailTextbox.Text = Properties.Settings.Default.savedEmail;
-            passwordTextbox.Text = Properties.Settings.Default.savedPassword;
-            userIdTextbox.Text = Properties.Settings.Default.savedUserID;
-            userAuthTokenTextbox.Text = Properties.Settings.Default.savedUserAuthToken;
-            AltLoginValue = Properties.Settings.Default.savedAltLoginValue;
+            emailTextbox.Text = Settings.Default.savedEmail;
+            passwordTextbox.Text = Settings.Default.savedPassword;
+            userIdTextbox.Text = Settings.Default.savedUserID;
+            userAuthTokenTextbox.Text = Settings.Default.savedUserAuthToken;
+            AltLoginValue = Settings.Default.savedAltLoginValue;
 
             // Set alt login mode & label text based on saved value
             if (AltLoginValue == "0")
@@ -94,7 +95,7 @@ namespace QobuzDownloaderX.View
                 userIdTextbox.Visible = false;
                 userAuthTokenTextbox.Visible = false;
 
-                // Unhide standard login methods
+                // Show standard login methods
                 emailTextbox.Visible = true;
                 passwordTextbox.Visible = true;
             }
@@ -107,7 +108,7 @@ namespace QobuzDownloaderX.View
                 emailTextbox.Visible = false;
                 passwordTextbox.Visible = false;
 
-                // Unhide alt login methods
+                // Show alt login methods
                 altLoginTutLabel.Visible = true;
                 userIdTextbox.Visible = true;
                 userAuthTokenTextbox.Visible = true;
@@ -118,7 +119,7 @@ namespace QobuzDownloaderX.View
             {
                 emailTextbox.ForeColor = Color.FromArgb(186, 186, 186);
             }
-            if (emailTextbox.Text == null || emailTextbox.Text == "")
+            if (string.IsNullOrEmpty(emailTextbox.Text))
             {
                 emailTextbox.ForeColor = Color.FromArgb(88, 92, 102);
                 emailTextbox.Text = "Email";
@@ -129,7 +130,7 @@ namespace QobuzDownloaderX.View
             {
                 userIdTextbox.ForeColor = Color.FromArgb(186, 186, 186);
             }
-            if (userIdTextbox.Text == null || userIdTextbox.Text == "")
+            if (string.IsNullOrEmpty(userIdTextbox.Text))
             {
                 userIdTextbox.ForeColor = Color.FromArgb(88, 92, 102);
                 userIdTextbox.Text = "user_id";
@@ -142,7 +143,7 @@ namespace QobuzDownloaderX.View
                 passwordTextbox.UseSystemPasswordChar = false;
                 passwordTextbox.ForeColor = Color.FromArgb(186, 186, 186);
             }
-            if (passwordTextbox.Text == null || passwordTextbox.Text == "")
+            if (string.IsNullOrEmpty(passwordTextbox.Text))
             {
                 passwordTextbox.ForeColor = Color.FromArgb(88, 92, 102);
                 passwordTextbox.UseSystemPasswordChar = true;
@@ -156,7 +157,7 @@ namespace QobuzDownloaderX.View
                 userAuthTokenTextbox.UseSystemPasswordChar = false;
                 userAuthTokenTextbox.ForeColor = Color.FromArgb(186, 186, 186);
             }
-            if (userAuthTokenTextbox.Text == null || userAuthTokenTextbox.Text == "")
+            if (string.IsNullOrEmpty(userAuthTokenTextbox.Text))
             {
                 userAuthTokenTextbox.ForeColor = Color.FromArgb(88, 92, 102);
                 userAuthTokenTextbox.UseSystemPasswordChar = true;
@@ -200,20 +201,15 @@ namespace QobuzDownloaderX.View
                                                + "\r\n==============\r\n\r\nWould you like to update?";
 
                     var dialogResult = FlexibleMessageBox.Show(updateDialogContents, "QBDLX-MOD | Update Available", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-                    if (dialogResult == DialogResult.Yes)
+
+                    if (dialogResult != DialogResult.Yes)
                     {
-                        // If "Yes" is clicked, open GitHub page and close QBDLX-MOD.
-                        Process.Start(Globals.GITHUB_LATEST_URL);
-                        Application.Exit();
+                        return;
                     }
-                    else if (dialogResult == DialogResult.No)
-                    {
-                        // Ignore the update until next open.
-                    }
-                }
-                else
-                {
-                    // Do nothing. All is good.
+
+                    // If "Yes" is clicked, open GitHub page and close QBDLX-MOD.
+                    Process.Start(Globals.GITHUB_LATEST_URL);
+                    Application.Exit();
                 }
             }
             catch (Exception ex)
@@ -226,22 +222,19 @@ namespace QobuzDownloaderX.View
                     "QBDLX | GitHub Connection Failed",
                     MessageBoxButtons.YesNo);
 
-                switch (dialogResult)
+                if (dialogResult == DialogResult.Yes)
                 {
-                    case DialogResult.Yes:
-                        // If "Yes" is clicked, open GitHub page and close QBDLX.
-                        Process.Start(Globals.GITHUB_LATEST_URL);
-                        Application.Exit();
-
-                        break;
-
-                    case DialogResult.No:
-                        // Ignore the update until next open.
-                        break;
+                    // If "Yes" is clicked, open GitHub page and close QBDLX.
+                    Process.Start(Globals.GITHUB_LATEST_URL);
+                    Application.Exit();
                 }
             }
         }
 
+        private void OpenSettings_Click(object sender, EventArgs e)
+        {
+            Globals.SettingsForm.ShowDialog(this);
+        }
 
         private void AboutLabel_Click(object sender, EventArgs e)
         {
@@ -305,7 +298,7 @@ namespace QobuzDownloaderX.View
             Globals.QbdlxForm = new QobuzDownloaderX();
             Globals.SearchForm = new SearchForm();
 
-            Invoke(new Action(() => Hide()));
+            Invoke(new Action(Hide));
             Application.Run(Globals.QbdlxForm);
         }
 
@@ -313,11 +306,23 @@ namespace QobuzDownloaderX.View
         {
             loginBG.WorkerSupportsCancellation = true;
 
-            // Initialize QobuzApiServiceManager with default Web Player AppId and AppSecret
+            var appId = Settings.Default.appId;
+            var appSecret = Settings.Default.appSecret;
+            var useCustomAppIdAndSecret = !string.IsNullOrWhiteSpace(appId) && !string.IsNullOrWhiteSpace(appSecret);
+
+            // Initialize QobuzApiServiceManager with default Web Player AppId and AppSecret if not set in settings
+            // Otherwise, use the provided app_id & app_secret
             try
             {
-                // Dynamic retrieval of app_id & app_secret in QobuzApiService were valid as of bundle-7.0.1-b018.js
-                QobuzApiServiceManager.Initialize();
+                if (useCustomAppIdAndSecret)
+                {
+                    QobuzApiServiceManager.Initialize(appId, appSecret);
+                }
+                else
+                {
+                    // Dynamic retrieval of app_id & app_secret in QobuzApiService were valid as of bundle-7.2.0-b082e.js
+                    QobuzApiServiceManager.Initialize();
+                }
             }
             catch (Exception ex)
             {
@@ -326,10 +331,14 @@ namespace QobuzDownloaderX.View
                 switch (ex)
                 {
                     case QobuzApiInitializationException _:
+                    case ArgumentException _:
                         errorMessage = $"{ex.Message} Error Log saved";
+
                         break;
+
                     default:
                         errorMessage = "Unknown error initializing API connection. Error Log saved";
+
                         break;
                 }
 
@@ -341,7 +350,9 @@ namespace QobuzDownloaderX.View
                 return;
             }
 
-            loginText.Invoke(new Action(() => loginText.Text = "ID and Secret Obtained! Logging in.."));
+            loginText.Invoke(useCustomAppIdAndSecret
+                ? new Action(() => loginText.Text = "Using custom App ID and Secret! Logging in...")
+                : new Action(() => loginText.Text = "ID and Secret Obtained! Logging in..."));
 
             try
             {
@@ -463,10 +474,10 @@ namespace QobuzDownloaderX.View
                     }
 
                     // Save info locally to be used on next launch.
-                    Properties.Settings.Default.savedEmail = emailTextbox.Text;
-                    Properties.Settings.Default.savedPassword = passwordTextbox.Text;
-                    Properties.Settings.Default.savedAltLoginValue = AltLoginValue;
-                    Properties.Settings.Default.Save();
+                    Settings.Default.savedEmail = emailTextbox.Text;
+                    Settings.Default.savedPassword = passwordTextbox.Text;
+                    Settings.Default.savedAltLoginValue = AltLoginValue;
+                    Settings.Default.Save();
 
                     #endregion Normal Login
 
@@ -499,10 +510,10 @@ namespace QobuzDownloaderX.View
                     userAuthTokenTextbox.Text = userAuthTokenTextbox.Text.Trim();
 
                     // Save info locally to be used on next launch.
-                    Properties.Settings.Default.savedUserID = userIdTextbox.Text;
-                    Properties.Settings.Default.savedUserAuthToken = userAuthTokenTextbox.Text;
-                    Properties.Settings.Default.savedAltLoginValue = AltLoginValue;
-                    Properties.Settings.Default.Save();
+                    Settings.Default.savedUserID = userIdTextbox.Text;
+                    Settings.Default.savedUserAuthToken = userAuthTokenTextbox.Text;
+                    Settings.Default.savedAltLoginValue = AltLoginValue;
+                    Settings.Default.Save();
 
                     #endregion Alt Login
 
@@ -514,7 +525,7 @@ namespace QobuzDownloaderX.View
             loginBG.RunWorkerAsync();
         }
 
-        private void Panel1_MouseMove(object sender, MouseEventArgs e)
+        private void TopPanel_MouseMove(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
@@ -651,16 +662,8 @@ namespace QobuzDownloaderX.View
 
         private void VisibleCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            if (visableCheckbox.Checked)
-            {
-                passwordTextbox.UseSystemPasswordChar = true;
-                userAuthTokenTextbox.UseSystemPasswordChar = true;
-            }
-            else
-            {
-                passwordTextbox.UseSystemPasswordChar = false;
-                userAuthTokenTextbox.UseSystemPasswordChar = false;
-            }
+            passwordTextbox.UseSystemPasswordChar = visableCheckbox.Checked;
+            userAuthTokenTextbox.UseSystemPasswordChar = visableCheckbox.Checked;
         }
     }
 }

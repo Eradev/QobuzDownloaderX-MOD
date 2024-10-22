@@ -524,7 +524,7 @@ namespace QobuzDownloaderX.Shared
 
                 // Empty output, then say Starting Downloads.
                 _logger.ClearUiLogComponent();
-                _logger.AddEmptyDownloadLogLine(true, false);
+                _logger.AddEmptyDownloadLogLine(true);
                 _logger.AddDownloadLogLine($"Starting Downloads for album \"{qobuzAlbum.Title}\" with ID: <{qobuzAlbum.Id}>...", true, true);
                 _logger.AddEmptyDownloadLogLine(true, true);
 

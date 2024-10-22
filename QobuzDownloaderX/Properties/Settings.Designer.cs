@@ -620,5 +620,31 @@ namespace QobuzDownloaderX.Properties {
                 this["urlTag"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public string appId {
+            get {
+                return ((string)(this["appId"]));
+            }
+            set {
+                this["appId"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public string appSecret {
+            get {
+                return ((string)(this["appSecret"]));
+            }
+            set {
+                this["appSecret"] = value;
+            }
+        }
     }
 }

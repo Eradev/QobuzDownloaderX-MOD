@@ -11,7 +11,7 @@ namespace QobuzDownloaderX.View
         * 
         *  Author:         Jörg Reichert (public@jreichert.de)
         *  Contributors:   Thanks to: David Hall, Roink
-        *  Version:        1.3
+        *  Version:        1.3.1
         *  Published at:   http://www.codeproject.com/Articles/601900/FlexibleMessageBox
         *  
         ************************************************************************************************************
@@ -56,6 +56,9 @@ namespace QobuzDownloaderX.View
         *  
         ************************************************************************************************************
         * History:
+        *  Version 1.3.1 - 11.October 2024 (DJDoubleD)
+        *  - Added ApplyCustomTheme() to be more in line with app
+        * 
         *  Version 1.3 - 19.Dezember 2014
         *  - Added refactoring function GetButtonText()
         *  - Used CurrentUICulture instead of InstalledUICulture
@@ -398,6 +401,35 @@ namespace QobuzDownloaderX.View
                 PerformLayout();
             }
 
+            private void ApplyCustomTheme()
+            {
+                // Set dark background color
+                BackColor = Color.FromArgb(45, 45, 48);
+
+                // Adjust text colors for better visibility
+                ForeColor = Color.White;
+                richTextBoxMessage.BackColor = Color.FromArgb(30, 30, 30);
+                richTextBoxMessage.ForeColor = Color.White;
+
+                // Adjust button colors
+                Color buttonColor = Color.FromArgb(60, 60, 65);
+                Color buttonTextColor = Color.White;
+
+                foreach (Control control in Controls)
+                {
+                    if (control is Button button)
+                    {
+                        button.BackColor = buttonColor;
+                        button.ForeColor = buttonTextColor;
+                        button.FlatStyle = FlatStyle.Flat;
+                        button.FlatAppearance.BorderColor = Color.DarkGray;
+                    }
+                }
+
+                // Adjust panel color
+                panel1.BackColor = Color.FromArgb(30, 30, 30);
+            }
+
             private Button button1;
             private BindingSource FlexibleMessageBoxFormBindingSource;
             private RichTextBox richTextBoxMessage;
@@ -443,6 +475,8 @@ namespace QobuzDownloaderX.View
             private FlexibleMessageBoxForm()
             {
                 InitializeComponent();
+
+                ApplyCustomTheme();
 
                 //Try to evaluate the language. If this fails, the fallback language English will be used
                 Enum.TryParse(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName, out languageID);
