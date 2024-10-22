@@ -111,7 +111,7 @@ namespace QobuzDownloaderX.View
 
             // Change account info for logout button
             var oldText = logoutLabel.Text;
-            logoutLabel.Text = oldText.Replace("%name%", Globals.Login.User.DisplayName);
+            logoutLabel.Text = oldText.Replace("%name%", Globals.Login.User?.DisplayName);
 
             // Initialize Global Tagging options. Selected ArtSize is automatically set in artSizeSelect change event listener.
             Globals.TaggingOptions = new TaggingOptions

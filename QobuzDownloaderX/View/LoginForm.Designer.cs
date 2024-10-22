@@ -29,15 +29,16 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LoginForm));
-            this.panel1 = new System.Windows.Forms.Panel();
+            this.topPanel = new System.Windows.Forms.Panel();
+            this.settingsPictureBox = new System.Windows.Forms.PictureBox();
             this.aboutLabel = new System.Windows.Forms.Label();
             this.verNumLabel2 = new System.Windows.Forms.Label();
             this.exitLabel = new System.Windows.Forms.Label();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.bannerPictureBox = new System.Windows.Forms.PictureBox();
             this.userAuthTokenTextbox = new System.Windows.Forms.TextBox();
             this.loginButton = new System.Windows.Forms.Button();
-            this.panel3 = new System.Windows.Forms.Panel();
-            this.panel4 = new System.Windows.Forms.Panel();
+            this.emailDividerPanel = new System.Windows.Forms.Panel();
+            this.passwordDividerPanel = new System.Windows.Forms.Panel();
             this.emailTextbox = new System.Windows.Forms.TextBox();
             this.passwordTextbox = new System.Windows.Forms.TextBox();
             this.loginText = new System.Windows.Forms.Label();
@@ -46,23 +47,38 @@
             this.altLoginLabel = new System.Windows.Forms.Label();
             this.altLoginTutLabel = new System.Windows.Forms.Label();
             this.userIdTextbox = new System.Windows.Forms.TextBox();
-            this.panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.topPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.settingsPictureBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.bannerPictureBox)).BeginInit();
             this.SuspendLayout();
             // 
-            // panel1
+            // topPanel
             // 
-            this.panel1.BackgroundImage = global::QobuzDownloaderX.Properties.Resources.login_frame;
-            this.panel1.Controls.Add(this.aboutLabel);
-            this.panel1.Controls.Add(this.verNumLabel2);
-            this.panel1.Controls.Add(this.exitLabel);
-            this.panel1.Controls.Add(this.pictureBox1);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel1.Location = new System.Drawing.Point(0, 0);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(282, 175);
-            this.panel1.TabIndex = 0;
-            this.panel1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Panel1_MouseMove);
+            this.topPanel.BackgroundImage = global::QobuzDownloaderX.Properties.Resources.login_frame;
+            this.topPanel.Controls.Add(this.settingsPictureBox);
+            this.topPanel.Controls.Add(this.aboutLabel);
+            this.topPanel.Controls.Add(this.verNumLabel2);
+            this.topPanel.Controls.Add(this.exitLabel);
+            this.topPanel.Controls.Add(this.bannerPictureBox);
+            this.topPanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.topPanel.Location = new System.Drawing.Point(0, 0);
+            this.topPanel.Name = "topPanel";
+            this.topPanel.Size = new System.Drawing.Size(282, 175);
+            this.topPanel.TabIndex = 0;
+            this.topPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.TopPanel_MouseMove);
+            // 
+            // settingsPictureBox
+            // 
+            this.settingsPictureBox.BackColor = System.Drawing.Color.Transparent;
+            this.settingsPictureBox.Image = global::QobuzDownloaderX.Properties.Resources.settings_icon;
+            this.settingsPictureBox.InitialImage = global::QobuzDownloaderX.Properties.Resources.settings_icon;
+            this.settingsPictureBox.Location = new System.Drawing.Point(219, 4);
+            this.settingsPictureBox.Name = "settingsPictureBox";
+            this.settingsPictureBox.Size = new System.Drawing.Size(15, 15);
+            this.settingsPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.settingsPictureBox.TabIndex = 36;
+            this.settingsPictureBox.TabStop = false;
+            this.settingsPictureBox.Click += new System.EventHandler(this.OpenSettings_Click);
             // 
             // aboutLabel
             // 
@@ -105,17 +121,17 @@
             this.exitLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.exitLabel.Click += new System.EventHandler(this.ExitLabel_Click);
             // 
-            // pictureBox1
+            // bannerPictureBox
             // 
-            this.pictureBox1.BackColor = System.Drawing.Color.Transparent;
-            this.pictureBox1.Image = global::QobuzDownloaderX.Properties.Resources.qbdlx_white;
-            this.pictureBox1.Location = new System.Drawing.Point(12, 52);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(258, 64);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox1.TabIndex = 29;
-            this.pictureBox1.TabStop = false;
-            this.pictureBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PictureBox1_MouseMove);
+            this.bannerPictureBox.BackColor = System.Drawing.Color.Transparent;
+            this.bannerPictureBox.Image = global::QobuzDownloaderX.Properties.Resources.qbdlx_white;
+            this.bannerPictureBox.Location = new System.Drawing.Point(12, 52);
+            this.bannerPictureBox.Name = "bannerPictureBox";
+            this.bannerPictureBox.Size = new System.Drawing.Size(258, 64);
+            this.bannerPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.bannerPictureBox.TabIndex = 29;
+            this.bannerPictureBox.TabStop = false;
+            this.bannerPictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PictureBox1_MouseMove);
             // 
             // userAuthTokenTextbox
             // 
@@ -148,21 +164,21 @@
             this.loginButton.UseVisualStyleBackColor = false;
             this.loginButton.Click += new System.EventHandler(this.LoginButton_Click);
             // 
-            // panel3
+            // emailDividerPanel
             // 
-            this.panel3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.panel3.Location = new System.Drawing.Point(12, 221);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(258, 1);
-            this.panel3.TabIndex = 2;
+            this.emailDividerPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
+            this.emailDividerPanel.Location = new System.Drawing.Point(12, 221);
+            this.emailDividerPanel.Name = "emailDividerPanel";
+            this.emailDividerPanel.Size = new System.Drawing.Size(258, 1);
+            this.emailDividerPanel.TabIndex = 2;
             // 
-            // panel4
+            // passwordDividerPanel
             // 
-            this.panel4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.panel4.Location = new System.Drawing.Point(12, 277);
-            this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(258, 1);
-            this.panel4.TabIndex = 2;
+            this.passwordDividerPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
+            this.passwordDividerPanel.Location = new System.Drawing.Point(12, 277);
+            this.passwordDividerPanel.Name = "passwordDividerPanel";
+            this.passwordDividerPanel.Size = new System.Drawing.Size(258, 1);
+            this.passwordDividerPanel.TabIndex = 2;
             // 
             // emailTextbox
             // 
@@ -270,12 +286,12 @@
             this.Controls.Add(this.altLoginLabel);
             this.Controls.Add(this.visableCheckbox);
             this.Controls.Add(this.loginText);
-            this.Controls.Add(this.panel4);
-            this.Controls.Add(this.panel3);
+            this.Controls.Add(this.passwordDividerPanel);
+            this.Controls.Add(this.emailDividerPanel);
             this.Controls.Add(this.passwordTextbox);
             this.Controls.Add(this.emailTextbox);
             this.Controls.Add(this.loginButton);
-            this.Controls.Add(this.panel1);
+            this.Controls.Add(this.topPanel);
             this.Controls.Add(this.userIdTextbox);
             this.Controls.Add(this.userAuthTokenTextbox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
@@ -283,9 +299,10 @@
             this.Name = "LoginForm";
             this.Text = "QobuzDLX | Login";
             this.Load += new System.EventHandler(this.LoginFrm_Load);
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.topPanel.ResumeLayout(false);
+            this.topPanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.settingsPictureBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.bannerPictureBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -293,11 +310,11 @@
 
         #endregion
 
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Panel topPanel;
+        private System.Windows.Forms.PictureBox bannerPictureBox;
         private System.Windows.Forms.Button loginButton;
-        private System.Windows.Forms.Panel panel3;
-        private System.Windows.Forms.Panel panel4;
+        private System.Windows.Forms.Panel emailDividerPanel;
+        private System.Windows.Forms.Panel passwordDividerPanel;
         private System.Windows.Forms.TextBox emailTextbox;
         private System.Windows.Forms.TextBox passwordTextbox;
         private System.Windows.Forms.Label exitLabel;
@@ -310,5 +327,6 @@
         private System.Windows.Forms.Label altLoginTutLabel;
         private System.Windows.Forms.TextBox userIdTextbox;
         private System.Windows.Forms.Label aboutLabel;
+        private System.Windows.Forms.PictureBox settingsPictureBox;
     }
 }

@@ -18,6 +18,7 @@ namespace QobuzDownloaderX.Shared.Tools
             foreach (var file in Directory.GetFiles(folderPath))
             {
                 var fileInfo = new FileInfo(file);
+
                 if (fileInfo.LastWriteTime < thresholdDate)
                 {
                     File.Delete(file);
@@ -27,7 +28,8 @@ namespace QobuzDownloaderX.Shared.Tools
 
         public static string GetInitializedLogDir()
         {
-            var logDirPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "logs");
+            var logDirPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath)!, "logs");
+
             if (!Directory.Exists(logDirPath))
             {
                 Directory.CreateDirectory(logDirPath);
@@ -40,7 +42,8 @@ namespace QobuzDownloaderX.Shared.Tools
 
         public static string GetInitializedSettingsDir()
         {
-            var settingsDirPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "settings");
+            var settingsDirPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath)!, "settings");
+
             if (!Directory.Exists(settingsDirPath))
             {
                 Directory.CreateDirectory(settingsDirPath);
